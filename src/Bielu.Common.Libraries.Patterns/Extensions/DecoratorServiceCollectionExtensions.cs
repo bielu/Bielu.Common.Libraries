@@ -119,6 +119,8 @@ public static class DecoratorServiceCollectionExtensions
     /// Applies all decorators registered via <c>DecorateWithPriority</c> in priority order.
     /// Decorators with lower priority numbers are applied as the outermost wrapper and execute first.
     /// This method must be called after all <c>DecorateWithPriority</c> registrations.
+    /// After this method is called, any subsequent calls to <c>DecorateWithPriority</c> will
+    /// throw an <see cref="InvalidOperationException"/>.
     /// </summary>
     public static IServiceCollection ApplyDecoratorPriorities(this IServiceCollection services)
     {
@@ -138,11 +140,21 @@ public static class DecoratorServiceCollectionExtensions
 
         services.Remove(descriptor);
 
+        // Mark as applied so subsequent DecorateWithPriority calls throw.
+        services.AddSingleton(DecoratorRegistryAppliedMarker.Instance);
+
         return services;
     }
 
     private static DecoratorRegistry GetOrAddRegistry(IServiceCollection services)
     {
+        if (services.Any(d => d.ServiceType == typeof(DecoratorRegistryAppliedMarker)))
+        {
+            throw new InvalidOperationException(
+                "Cannot call DecorateWithPriority after ApplyDecoratorPriorities has already been called. " +
+                "All decorator registrations must happen before ApplyDecoratorPriorities.");
+        }
+
         var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(DecoratorRegistry));
 
         if (descriptor?.ImplementationInstance is DecoratorRegistry registry)

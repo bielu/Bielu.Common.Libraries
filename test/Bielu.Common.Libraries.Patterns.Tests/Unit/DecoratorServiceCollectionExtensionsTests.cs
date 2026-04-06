@@ -251,4 +251,69 @@ public class DecoratorServiceCollectionExtensionsTests
 
         services.Count(d => d.ServiceType == typeof(DecoratorRegistry)).ShouldBe(1);
     }
+
+    // ─── Throws after ApplyDecoratorPriorities ────────────────────────────
+
+    [Fact]
+    public void DecorateWithPriority_Generic_ThrowsAfterApplyDecoratorPriorities()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IGreeter, RealGreeter>();
+        services.DecorateWithPriority<IGreeter, ShoutingGreeterDecorator>(1);
+        services.ApplyDecoratorPriorities();
+
+        Should.Throw<InvalidOperationException>(() =>
+            services.DecorateWithPriority<IGreeter, ExclamationGreeterDecorator>(2));
+    }
+
+    [Fact]
+    public void DecorateWithPriority_NonGeneric_ThrowsAfterApplyDecoratorPriorities()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IGreeter, RealGreeter>();
+        services.DecorateWithPriority<IGreeter, ShoutingGreeterDecorator>(1);
+        services.ApplyDecoratorPriorities();
+
+        Should.Throw<InvalidOperationException>(() =>
+            services.DecorateWithPriority(typeof(IGreeter), typeof(ExclamationGreeterDecorator), 2));
+    }
+
+    [Fact]
+    public void DecorateWithPriority_FactoryWithProvider_ThrowsAfterApplyDecoratorPriorities()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IGreeter, RealGreeter>();
+        services.DecorateWithPriority<IGreeter, ShoutingGreeterDecorator>(1);
+        services.ApplyDecoratorPriorities();
+
+        Should.Throw<InvalidOperationException>(() =>
+            services.DecorateWithPriority<IGreeter>((inner, _) => new ExclamationGreeterDecorator(inner), 2));
+    }
+
+    [Fact]
+    public void DecorateWithPriority_FactoryWithoutProvider_ThrowsAfterApplyDecoratorPriorities()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IGreeter, RealGreeter>();
+        services.DecorateWithPriority<IGreeter, ShoutingGreeterDecorator>(1);
+        services.ApplyDecoratorPriorities();
+
+        Should.Throw<InvalidOperationException>(() =>
+            services.DecorateWithPriority<IGreeter>(inner => new ExclamationGreeterDecorator(inner), 2));
+    }
+
+    [Fact]
+    public void DecorateWithPriority_NonGenericFactory_ThrowsAfterApplyDecoratorPriorities()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IGreeter, RealGreeter>();
+        services.DecorateWithPriority<IGreeter, ShoutingGreeterDecorator>(1);
+        services.ApplyDecoratorPriorities();
+
+        Should.Throw<InvalidOperationException>(() =>
+            services.DecorateWithPriority(
+                typeof(IGreeter),
+                (inner, _) => new ExclamationGreeterDecorator((IGreeter)inner),
+                2));
+    }
 }
