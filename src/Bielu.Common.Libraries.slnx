@@ -1,0 +1,20 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/tests/">
+    <Project Path="../test/Bielu.Common.Libraries.Patterns.Tests/Bielu.Common.Libraries.Patterns.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Solution Files/">
+    <File Path="../.editorconfig" />
+    <File Path="../.gitignore" />
+    <File Path="../CODEOWNERS" />
+    <File Path="../LICENSE" />
+    <File Path="../README.md" />
+    <File Path="../version.props" />
+    <File Path="../Directory.Packages.props" />
+  </Folder>
+  <Project Path="./Bielu.Common.Libraries.Patterns/Bielu.Common.Libraries.Patterns.csproj" />
+</Solution>
