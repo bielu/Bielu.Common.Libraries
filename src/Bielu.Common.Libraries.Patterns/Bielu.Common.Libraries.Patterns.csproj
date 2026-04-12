@@ -5,8 +5,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>Bielu.Common.Libraries.Patterns</RootNamespace>
-        <Description>Bielu.Common.Libraries.Patterns - Pattern helpers for the bielu ecosystem, including priority-based decorator registration via Scrutor</Description>
-        <PackageTags>scrutor;decorator;di;dependency-injection;patterns;priority</PackageTags>
+        <Description>Bielu.Common.Libraries.Patterns - Pattern helpers for the bielu ecosystem, including priority-based decorator registration via Scrutor and wrapper pattern support</Description>
+        <PackageTags>scrutor;decorator;wrapper;di;dependency-injection;patterns;priority</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>
