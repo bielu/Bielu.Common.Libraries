@@ -9,112 +9,119 @@ namespace Bielu.Common.Libraries.Patterns.Extensions;
 
 /// <summary>
 /// Extension methods on <see cref="IServiceCollection"/> for registering
-/// <see cref="IWrapper{TService}"/> implementations in the dependency injection container.
+/// <see cref="Wrapper{TService}"/> implementations in the dependency injection container.
+/// Wrappers are registered as their concrete type, unlike decorators which use a service interface.
 /// </summary>
 public static class WrapperServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers <typeparamref name="TWrapper"/> as a transient <see cref="IWrapper{TService}"/>.
-    /// The wrapper is resolved from the container and receives the inner service via constructor injection.
+    /// Registers <typeparamref name="TWrapper"/> as a transient service.
+    /// The wrapper is resolved from the container by its concrete type
+    /// and receives the inner service via constructor injection.
     /// </summary>
     /// <typeparam name="TService">The service type being wrapped.</typeparam>
     /// <typeparam name="TWrapper">The wrapper implementation type.</typeparam>
     public static IServiceCollection AddTransientWrapper<TService, TWrapper>(this IServiceCollection services)
         where TService : class
-        where TWrapper : class, IWrapper<TService>
+        where TWrapper : Wrapper<TService>
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddTransient<IWrapper<TService>, TWrapper>();
+        services.AddTransient<TWrapper>();
         return services;
     }
 
     /// <summary>
-    /// Registers <typeparamref name="TWrapper"/> as a scoped <see cref="IWrapper{TService}"/>.
-    /// The wrapper is resolved from the container and receives the inner service via constructor injection.
+    /// Registers <typeparamref name="TWrapper"/> as a scoped service.
+    /// The wrapper is resolved from the container by its concrete type
+    /// and receives the inner service via constructor injection.
     /// </summary>
     /// <typeparam name="TService">The service type being wrapped.</typeparam>
     /// <typeparam name="TWrapper">The wrapper implementation type.</typeparam>
     public static IServiceCollection AddScopedWrapper<TService, TWrapper>(this IServiceCollection services)
         where TService : class
-        where TWrapper : class, IWrapper<TService>
+        where TWrapper : Wrapper<TService>
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddScoped<IWrapper<TService>, TWrapper>();
+        services.AddScoped<TWrapper>();
         return services;
     }
 
     /// <summary>
-    /// Registers <typeparamref name="TWrapper"/> as a singleton <see cref="IWrapper{TService}"/>.
-    /// The wrapper is resolved from the container and receives the inner service via constructor injection.
+    /// Registers <typeparamref name="TWrapper"/> as a singleton service.
+    /// The wrapper is resolved from the container by its concrete type
+    /// and receives the inner service via constructor injection.
     /// </summary>
     /// <typeparam name="TService">The service type being wrapped.</typeparam>
     /// <typeparam name="TWrapper">The wrapper implementation type.</typeparam>
     public static IServiceCollection AddSingletonWrapper<TService, TWrapper>(this IServiceCollection services)
         where TService : class
-        where TWrapper : class, IWrapper<TService>
+        where TWrapper : Wrapper<TService>
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddSingleton<IWrapper<TService>, TWrapper>();
+        services.AddSingleton<TWrapper>();
         return services;
     }
 
     /// <summary>
-    /// Registers a transient <see cref="IWrapper{TService}"/> using a factory delegate.
+    /// Registers a transient wrapper using a factory delegate.
+    /// The wrapper is resolved from the container by its concrete type.
     /// </summary>
-    /// <typeparam name="TService">The service type being wrapped.</typeparam>
+    /// <typeparam name="TWrapper">The wrapper implementation type.</typeparam>
     /// <param name="services">The service collection.</param>
     /// <param name="wrapperFactory">A factory that receives the <see cref="IServiceProvider"/>
     /// and returns the wrapper instance.</param>
-    public static IServiceCollection AddTransientWrapper<TService>(
+    public static IServiceCollection AddTransientWrapper<TWrapper>(
         this IServiceCollection services,
-        Func<IServiceProvider, IWrapper<TService>> wrapperFactory)
-        where TService : class
+        Func<IServiceProvider, TWrapper> wrapperFactory)
+        where TWrapper : class
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(wrapperFactory);
 
-        services.AddTransient<IWrapper<TService>>(wrapperFactory);
+        services.AddTransient(wrapperFactory);
         return services;
     }
 
     /// <summary>
-    /// Registers a scoped <see cref="IWrapper{TService}"/> using a factory delegate.
+    /// Registers a scoped wrapper using a factory delegate.
+    /// The wrapper is resolved from the container by its concrete type.
     /// </summary>
-    /// <typeparam name="TService">The service type being wrapped.</typeparam>
+    /// <typeparam name="TWrapper">The wrapper implementation type.</typeparam>
     /// <param name="services">The service collection.</param>
     /// <param name="wrapperFactory">A factory that receives the <see cref="IServiceProvider"/>
     /// and returns the wrapper instance.</param>
-    public static IServiceCollection AddScopedWrapper<TService>(
+    public static IServiceCollection AddScopedWrapper<TWrapper>(
         this IServiceCollection services,
-        Func<IServiceProvider, IWrapper<TService>> wrapperFactory)
-        where TService : class
+        Func<IServiceProvider, TWrapper> wrapperFactory)
+        where TWrapper : class
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(wrapperFactory);
 
-        services.AddScoped<IWrapper<TService>>(wrapperFactory);
+        services.AddScoped(wrapperFactory);
         return services;
     }
 
     /// <summary>
-    /// Registers a singleton <see cref="IWrapper{TService}"/> using a factory delegate.
+    /// Registers a singleton wrapper using a factory delegate.
+    /// The wrapper is resolved from the container by its concrete type.
     /// </summary>
-    /// <typeparam name="TService">The service type being wrapped.</typeparam>
+    /// <typeparam name="TWrapper">The wrapper implementation type.</typeparam>
     /// <param name="services">The service collection.</param>
     /// <param name="wrapperFactory">A factory that receives the <see cref="IServiceProvider"/>
     /// and returns the wrapper instance.</param>
-    public static IServiceCollection AddSingletonWrapper<TService>(
+    public static IServiceCollection AddSingletonWrapper<TWrapper>(
         this IServiceCollection services,
-        Func<IServiceProvider, IWrapper<TService>> wrapperFactory)
-        where TService : class
+        Func<IServiceProvider, TWrapper> wrapperFactory)
+        where TWrapper : class
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(wrapperFactory);
 
-        services.AddSingleton<IWrapper<TService>>(wrapperFactory);
+        services.AddSingleton(wrapperFactory);
         return services;
     }
 }

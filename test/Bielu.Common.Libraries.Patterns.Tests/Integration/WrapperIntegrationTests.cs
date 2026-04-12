@@ -12,7 +12,7 @@ namespace Bielu.Common.Libraries.Patterns.Tests.Integration;
 
 /// <summary>
 /// Integration tests that build a real <see cref="ServiceProvider"/> and verify that wrappers
-/// are resolved correctly from the container.
+/// are resolved correctly from the container by their concrete type.
 /// </summary>
 public class WrapperIntegrationTests
 {
@@ -55,7 +55,7 @@ public class WrapperIntegrationTests
         services.AddTransientWrapper<INotificationService, NotificationServiceWrapper>();
 
         var provider = services.BuildServiceProvider();
-        var wrapper = provider.GetRequiredService<IWrapper<INotificationService>>();
+        var wrapper = provider.GetRequiredService<NotificationServiceWrapper>();
 
         wrapper.ShouldBeOfType<NotificationServiceWrapper>();
         wrapper.Inner.ShouldBeOfType<EmailNotificationService>();
@@ -69,7 +69,7 @@ public class WrapperIntegrationTests
         services.AddTransientWrapper<INotificationService, NotificationServiceWrapper>();
 
         var provider = services.BuildServiceProvider();
-        var wrapper = (NotificationServiceWrapper)provider.GetRequiredService<IWrapper<INotificationService>>();
+        var wrapper = provider.GetRequiredService<NotificationServiceWrapper>();
 
         var result = wrapper.SendUrgent("System down");
 
@@ -84,7 +84,7 @@ public class WrapperIntegrationTests
         services.AddTransientWrapper<INotificationService, NotificationServiceWrapper>();
 
         var provider = services.BuildServiceProvider();
-        var wrapper = provider.GetRequiredService<IWrapper<INotificationService>>();
+        var wrapper = provider.GetRequiredService<NotificationServiceWrapper>();
 
         var result = wrapper.Inner.Send("Hello");
 
@@ -100,7 +100,7 @@ public class WrapperIntegrationTests
 
         var provider = services.BuildServiceProvider();
         using var scope = provider.CreateScope();
-        var wrapper = scope.ServiceProvider.GetRequiredService<IWrapper<INotificationService>>();
+        var wrapper = scope.ServiceProvider.GetRequiredService<NotificationServiceWrapper>();
 
         wrapper.ShouldBeOfType<NotificationServiceWrapper>();
         wrapper.Inner.ShouldBeOfType<EmailNotificationService>();
@@ -114,8 +114,8 @@ public class WrapperIntegrationTests
         services.AddSingletonWrapper<INotificationService, NotificationServiceWrapper>();
 
         var provider = services.BuildServiceProvider();
-        var wrapper1 = provider.GetRequiredService<IWrapper<INotificationService>>();
-        var wrapper2 = provider.GetRequiredService<IWrapper<INotificationService>>();
+        var wrapper1 = provider.GetRequiredService<NotificationServiceWrapper>();
+        var wrapper2 = provider.GetRequiredService<NotificationServiceWrapper>();
 
         wrapper1.ShouldBeSameAs(wrapper2);
     }
@@ -128,8 +128,8 @@ public class WrapperIntegrationTests
         services.AddTransientWrapper<INotificationService, NotificationServiceWrapper>();
 
         var provider = services.BuildServiceProvider();
-        var wrapper1 = provider.GetRequiredService<IWrapper<INotificationService>>();
-        var wrapper2 = provider.GetRequiredService<IWrapper<INotificationService>>();
+        var wrapper1 = provider.GetRequiredService<NotificationServiceWrapper>();
+        var wrapper2 = provider.GetRequiredService<NotificationServiceWrapper>();
 
         wrapper1.ShouldNotBeSameAs(wrapper2);
     }
@@ -141,13 +141,13 @@ public class WrapperIntegrationTests
         var services = new ServiceCollection();
         services.AddSingleton<INotificationService, EmailNotificationService>();
         services.AddSingleton(auditLog);
-        services.AddTransientWrapper<INotificationService>(sp =>
+        services.AddTransientWrapper<AuditedNotificationServiceWrapper>(sp =>
             new AuditedNotificationServiceWrapper(
                 sp.GetRequiredService<INotificationService>(),
                 sp.GetRequiredService<List<string>>()));
 
         var provider = services.BuildServiceProvider();
-        var wrapper = (AuditedNotificationServiceWrapper)provider.GetRequiredService<IWrapper<INotificationService>>();
+        var wrapper = provider.GetRequiredService<AuditedNotificationServiceWrapper>();
 
         var result = wrapper.SendAndAudit("Test message");
 

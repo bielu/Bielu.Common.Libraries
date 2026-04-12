@@ -39,7 +39,7 @@ public class WrapperServiceCollectionExtensionsTests
 
         services.AddTransientWrapper<IMyService, MyServiceWrapper>();
 
-        services.Any(d => d.ServiceType == typeof(IWrapper<IMyService>)).ShouldBeTrue();
+        services.Any(d => d.ServiceType == typeof(MyServiceWrapper)).ShouldBeTrue();
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class WrapperServiceCollectionExtensionsTests
 
         services.AddScopedWrapper<IMyService, MyServiceWrapper>();
 
-        services.Any(d => d.ServiceType == typeof(IWrapper<IMyService>)).ShouldBeTrue();
+        services.Any(d => d.ServiceType == typeof(MyServiceWrapper)).ShouldBeTrue();
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public class WrapperServiceCollectionExtensionsTests
 
         services.AddSingletonWrapper<IMyService, MyServiceWrapper>();
 
-        services.Any(d => d.ServiceType == typeof(IWrapper<IMyService>)).ShouldBeTrue();
+        services.Any(d => d.ServiceType == typeof(MyServiceWrapper)).ShouldBeTrue();
     }
 
     [Fact]
@@ -128,7 +128,7 @@ public class WrapperServiceCollectionExtensionsTests
             services.AddSingletonWrapper<IMyService, MyServiceWrapper>());
     }
 
-    // ─── AddTransientWrapper<TService> (factory) ─────────────────────────
+    // ─── AddTransientWrapper<TWrapper> (factory) ─────────────────────────
 
     [Fact]
     public void AddTransientWrapper_Factory_RegistersWrapperInServices()
@@ -136,10 +136,10 @@ public class WrapperServiceCollectionExtensionsTests
         var services = new ServiceCollection();
         services.AddSingleton<IMyService, RealService>();
 
-        services.AddTransientWrapper<IMyService>(sp =>
+        services.AddTransientWrapper<MyServiceWrapper>(sp =>
             new MyServiceWrapper(sp.GetRequiredService<IMyService>()));
 
-        services.Any(d => d.ServiceType == typeof(IWrapper<IMyService>)).ShouldBeTrue();
+        services.Any(d => d.ServiceType == typeof(MyServiceWrapper)).ShouldBeTrue();
     }
 
     [Fact]
@@ -148,7 +148,7 @@ public class WrapperServiceCollectionExtensionsTests
         var services = new ServiceCollection();
         services.AddSingleton<IMyService, RealService>();
 
-        var result = services.AddTransientWrapper<IMyService>(sp =>
+        var result = services.AddTransientWrapper<MyServiceWrapper>(sp =>
             new MyServiceWrapper(sp.GetRequiredService<IMyService>()));
 
         result.ShouldBeSameAs(services);
@@ -160,7 +160,7 @@ public class WrapperServiceCollectionExtensionsTests
         IServiceCollection services = null!;
 
         Should.Throw<ArgumentNullException>(() =>
-            services.AddTransientWrapper<IMyService>(sp =>
+            services.AddTransientWrapper<MyServiceWrapper>(sp =>
                 new MyServiceWrapper(sp.GetRequiredService<IMyService>())));
     }
 
@@ -168,13 +168,13 @@ public class WrapperServiceCollectionExtensionsTests
     public void AddTransientWrapper_Factory_ThrowsWhenFactoryIsNull()
     {
         var services = new ServiceCollection();
-        Func<IServiceProvider, IWrapper<IMyService>> factory = null!;
+        Func<IServiceProvider, MyServiceWrapper> factory = null!;
 
         Should.Throw<ArgumentNullException>(() =>
-            services.AddTransientWrapper<IMyService>(factory));
+            services.AddTransientWrapper(factory));
     }
 
-    // ─── AddScopedWrapper<TService> (factory) ────────────────────────────
+    // ─── AddScopedWrapper<TWrapper> (factory) ────────────────────────────
 
     [Fact]
     public void AddScopedWrapper_Factory_RegistersWrapperInServices()
@@ -182,10 +182,10 @@ public class WrapperServiceCollectionExtensionsTests
         var services = new ServiceCollection();
         services.AddSingleton<IMyService, RealService>();
 
-        services.AddScopedWrapper<IMyService>(sp =>
+        services.AddScopedWrapper<MyServiceWrapper>(sp =>
             new MyServiceWrapper(sp.GetRequiredService<IMyService>()));
 
-        services.Any(d => d.ServiceType == typeof(IWrapper<IMyService>)).ShouldBeTrue();
+        services.Any(d => d.ServiceType == typeof(MyServiceWrapper)).ShouldBeTrue();
     }
 
     [Fact]
@@ -194,7 +194,7 @@ public class WrapperServiceCollectionExtensionsTests
         IServiceCollection services = null!;
 
         Should.Throw<ArgumentNullException>(() =>
-            services.AddScopedWrapper<IMyService>(sp =>
+            services.AddScopedWrapper<MyServiceWrapper>(sp =>
                 new MyServiceWrapper(sp.GetRequiredService<IMyService>())));
     }
 
@@ -202,13 +202,13 @@ public class WrapperServiceCollectionExtensionsTests
     public void AddScopedWrapper_Factory_ThrowsWhenFactoryIsNull()
     {
         var services = new ServiceCollection();
-        Func<IServiceProvider, IWrapper<IMyService>> factory = null!;
+        Func<IServiceProvider, MyServiceWrapper> factory = null!;
 
         Should.Throw<ArgumentNullException>(() =>
-            services.AddScopedWrapper<IMyService>(factory));
+            services.AddScopedWrapper(factory));
     }
 
-    // ─── AddSingletonWrapper<TService> (factory) ─────────────────────────
+    // ─── AddSingletonWrapper<TWrapper> (factory) ─────────────────────────
 
     [Fact]
     public void AddSingletonWrapper_Factory_RegistersWrapperInServices()
@@ -216,10 +216,10 @@ public class WrapperServiceCollectionExtensionsTests
         var services = new ServiceCollection();
         services.AddSingleton<IMyService, RealService>();
 
-        services.AddSingletonWrapper<IMyService>(sp =>
+        services.AddSingletonWrapper<MyServiceWrapper>(sp =>
             new MyServiceWrapper(sp.GetRequiredService<IMyService>()));
 
-        services.Any(d => d.ServiceType == typeof(IWrapper<IMyService>)).ShouldBeTrue();
+        services.Any(d => d.ServiceType == typeof(MyServiceWrapper)).ShouldBeTrue();
     }
 
     [Fact]
@@ -228,7 +228,7 @@ public class WrapperServiceCollectionExtensionsTests
         IServiceCollection services = null!;
 
         Should.Throw<ArgumentNullException>(() =>
-            services.AddSingletonWrapper<IMyService>(sp =>
+            services.AddSingletonWrapper<MyServiceWrapper>(sp =>
                 new MyServiceWrapper(sp.GetRequiredService<IMyService>())));
     }
 
@@ -236,9 +236,9 @@ public class WrapperServiceCollectionExtensionsTests
     public void AddSingletonWrapper_Factory_ThrowsWhenFactoryIsNull()
     {
         var services = new ServiceCollection();
-        Func<IServiceProvider, IWrapper<IMyService>> factory = null!;
+        Func<IServiceProvider, MyServiceWrapper> factory = null!;
 
         Should.Throw<ArgumentNullException>(() =>
-            services.AddSingletonWrapper<IMyService>(factory));
+            services.AddSingletonWrapper(factory));
     }
 }
